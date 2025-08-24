@@ -31,13 +31,13 @@ Use the standard `EventSource` and enhance it with type-safe event listeners usi
 ```ts
 import { addTypedDataEventListener } from "typed-sse";
 
-interface ConnectionData {
-  connection_id: string;
+interface Events {
+  connected: { connection_id: string };
 }
 
 const es = new EventSource("/api/events/stream");
 
-const myEvent = addTypedDataEventListener<ConnectionData>(
+const connected = addTypedDataEventListener<Events>(
   es,
   "connected",
   (data) => {
@@ -45,7 +45,7 @@ const myEvent = addTypedDataEventListener<ConnectionData>(
   }
 );
 
-myEvent.stopListening();
+connected.stopListening();
 es.close();
 ```
 
@@ -65,24 +65,29 @@ interface MessageEventPayload {
   /* ... */
 }
 
-const tes = typedEventSource("/api/events/stream", {
+interface Events {
+  custom: ConnectionData;
+  message: MessageEventPayload;
+}
+
+const tes = typedEventSource<Events>("/api/events/stream", {
   withCredentials: true,
   retry: { base: 500, max: 30000 },
 });
 
-const customEvent = tes.on<ConnectionData>("custom", (data) => {
+const customEvent = tes.on("custom", (data) => {
   console.log("Received 'custom' event with parsed and typed data:", data);
   console.log(
     `You can directly access typed payload properties: data.connection_id: ${data.custom_data_id} , custom_data_number : ${data.custom_data_number}, etc ... `
   );
 });
 
-const messageEvent = tes.on<MessageEventPayload>("message", (data) => {
+const messageEvent = tes.on("message", (data) => {
   // ...
 });
 
 // cleanup
-connectedEvent.stopListening();
+customEvent.stopListening();
 messageEvent.stopListening();
 tes.close();
 ```

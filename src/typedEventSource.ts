@@ -3,6 +3,7 @@ import {
   type EventSourceCtor,
   type CreateOptions,
   type TypedHandler,
+  type TypedEventMap,
 } from "./types";
 
 function getDefaultCtor(): EventSourceCtor | undefined {
@@ -10,7 +11,9 @@ function getDefaultCtor(): EventSourceCtor | undefined {
   return (globalThis as any).EventSource as EventSourceCtor | undefined;
 }
 
-export function typedEventSource(
+export function typedEventSource<
+  Events extends TypedEventMap = TypedEventMap
+>(
   url: string,
   opts: CreateOptions = {},
   ES: EventSourceCtor | undefined = getDefaultCtor()
@@ -84,17 +87,17 @@ export function typedEventSource(
   connect();
 
   return {
-    on<T>(
-      type: string,
-      handler: TypedHandler<T>
+    on<K extends keyof Events>(
+      type: K,
+      handler: TypedHandler<Events[K]>
     ): { stopListening: () => void } {
       const wrapped = (ev: MessageEvent) => {
-        const data = parseEvent<T>(ev);
+        const data = parseEvent<Events[K]>(ev);
         if (data != null) handler(data);
       };
-      addRaw(type, wrapped);
+      addRaw(type as string, wrapped);
       return {
-        stopListening: () => removeRaw(type, wrapped),
+        stopListening: () => removeRaw(type as string, wrapped),
       };
     },
     close() {
