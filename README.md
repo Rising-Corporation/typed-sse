@@ -15,37 +15,21 @@
 
 `typed-sse` is a TypeScript wrapper for the native `EventSource` API, designed to simplify working with server-sent events (SSE). It allows you to read event data directly with automatic type checking, ensuring that the payloads match your expected types. This helps catch errors at compile time and makes your SSE code safer and easier to maintain.
 
-```ts
-import { typedEventSource } from "typed-sse";
+## Two Ways to Use
 
-interface ConnectionData {
-  connection_id: string;
-}
-interface MessageEventPayload {
-  /* ... */
-}
+You can use `typed-sse` in two ways:
 
-const sse = typedEventSource("/api/events/stream", {
-  withCredentials: true,
-  retry: { base: 500, max: 30000 },
-});
+1. With the classic `EventSource` API for minimal changes to your existing code.
+2. With the custom `typedEventSource` for a more streamlined and type-safe experience.
 
-const connectedEvent = sse.on<ConnectionData>("connected", (d) => {
-  console.log("connected:", d.connection_id);
-});
+### Method 1: Classic EventSource
 
-const messageEvent = sse.on<MessageEventPayload>("message", (d) => {
-  // ...
-});
+Use the standard `EventSource` and enhance it with type-safe event listeners using `addTypedDataEventListener`.
 
-// cleanup
-connectedEvent.stopListening();
-messageEvent.stopListening();
-sse.close();
-```
+- This implementation offers a type-safe approach to handling EventSource events. If you prefer to keep using the standard EventSource class for clearer code readability, you can use the `addTypedDataEventListener` function. It takes a regular EventSource instance and allows you to access event payloads in a type-safe way.
 
 ```ts
-import { addTypedEventListener } from "typed-sse";
+import { addTypedDataEventListener } from "typed-sse";
 
 interface ConnectionData {
   connection_id: string;
@@ -53,7 +37,7 @@ interface ConnectionData {
 
 const es = new EventSource("/api/events/stream");
 
-const myEvent = addTypedEventListener<ConnectionData>(
+const myEvent = addTypedDataEventListener<ConnectionData>(
   es,
   "connected",
   (data) => {
@@ -64,3 +48,46 @@ const myEvent = addTypedEventListener<ConnectionData>(
 myEvent.stopListening();
 es.close();
 ```
+
+### Method 2: typedEventSource
+
+- Use the `typedEventSource` function for a more streamlined and type-safe experience. This approach provides a convenient API for subscribing to events with automatic type checking.
+
+```ts
+import { typedEventSource } from "typed-sse";
+
+interface ConnectionData {
+  custom_data_id: string;
+  custom_data_number: number;
+  custom_data_status: boolean;
+}
+interface MessageEventPayload {
+  /* ... */
+}
+
+const tes = typedEventSource("/api/events/stream", {
+  withCredentials: true,
+  retry: { base: 500, max: 30000 },
+});
+
+const customEvent = tes.on<ConnectionData>("custom", (data) => {
+  console.log("Received 'custom' event with parsed and typed data:", data);
+  console.log(
+    `You can directly access typed payload properties: data.connection_id: ${data.custom_data_id} , custom_data_number : ${data.custom_data_number}, etc ... `
+  );
+});
+
+const messageEvent = tes.on<MessageEventPayload>("message", (data) => {
+  // ...
+});
+
+// cleanup
+connectedEvent.stopListening();
+messageEvent.stopListening();
+tes.close();
+```
+
+## 👨‍💻 Author
+
+MrRise@RisingCorporation  
+Made with ❤️ and Bun 🐇
