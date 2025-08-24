@@ -37,9 +37,9 @@ jobs:
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
       - run: bun install
-      - run: bun npm version patch
+      - run: bun run version-patch
       - run: bun run build
-      - run: bun npm publish
+      - run: bun publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

@@ -1,6 +1,6 @@
 {
   "name": "typed-sse",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Typed helpers for Server-Sent Events (EventSource) with JSON parsing and optional reconnect.",
   "type": "module",
   "exports": {
@@ -21,7 +21,8 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "bun run clean && bun run build",
     "lint": "eslint . --ext .ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "version-patch": "npm version patch"
   },
   "keywords": [
     "sse",
