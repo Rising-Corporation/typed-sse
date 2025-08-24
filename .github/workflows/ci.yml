@@ -1,0 +1,38 @@
+name: CI and Publish
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  release:
+    types: [published] # Déclenche sur une nouvelle release (tag) créée sur GitHub
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+      - run: npm install
+      - run: npm run build
+      - run: npm run lint
+      - run: npm run test
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: build # N'exécute ce job que si le job 'build' réussit
+    if: github.event_name == 'release' # Seulement sur une release
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org" # Pour npm
+      - run: npm install
+      - run: npm run build
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # Utilise le secret
