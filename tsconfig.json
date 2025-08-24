@@ -1,6 +1,6 @@
+// tsconfig.json
 {
   "compilerOptions": {
-    // Environment setup & latest features
     "lib": ["ESNext", "DOM"],
     "target": "ESNext",
     "module": "ESNext",
@@ -8,24 +8,18 @@
     "jsx": "react-jsx",
     "declaration": true,
     "rootDir": "./src",
-
-    // Bundler mode
     "moduleResolution": "bundler",
-    //"allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
-    //"noEmit": true,
     "outDir": "./dist",
-
-    // Best practices
     "strict": true,
     "skipLibCheck": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
     "noImplicitOverride": true,
-
-    // Some stricter flags (disabled by default)
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noPropertyAccessFromIndexSignature": false
-  }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["**/*.test.ts", "eslint.config.ts"]
 }

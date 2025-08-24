@@ -19,7 +19,7 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build",
+    "prepublishOnly": "bun run clean && bun run build",
     "lint": "eslint . --ext .ts",
     "test": "vitest run"
   },
