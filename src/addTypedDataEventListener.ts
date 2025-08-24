@@ -1,7 +1,10 @@
 import { parseEvent } from "./types";
-import type { TypedHandler } from "./types";
+import type { TypedHandler, TypedEventMap } from "./types";
 
-export function addTypedDataEventListener<T>(
+export function addTypedDataEventListener<
+  Events extends TypedEventMap,
+  K extends keyof Events
+>(
   /**
    * Adds a typed event listener to an EventSource instance.
    * The handler receives parsed JSON data of type T.
@@ -12,14 +15,16 @@ export function addTypedDataEventListener<T>(
    * @param handler - The callback to handle parsed data.
    */
   es: EventSource,
-  type: string,
-  handler: TypedHandler<T>
+  type: K,
+  handler: TypedHandler<Events[K]>
 ): { stopListening: () => void } {
   const wrapped = (event: Event) => {
-    const data = parseEvent<T>(event as MessageEvent);
+    const data = parseEvent<Events[K]>(event as MessageEvent);
     if (data != null) handler(data);
   };
-  es.addEventListener(type, wrapped);
+  es.addEventListener(type as string, wrapped);
 
-  return { stopListening: () => es.removeEventListener(type, wrapped) };
+  return {
+    stopListening: () => es.removeEventListener(type as string, wrapped),
+  };
 }

@@ -4,6 +4,17 @@
 export type TypedHandler<T> = (data: T) => void;
 
 /**
+ * Mapping between SSE event names and their expected payload types.
+ *
+ * @example
+ * interface Events {
+ *   connected: { id: string };
+ *   message: { text: string };
+ * }
+ */
+export type TypedEventMap = Record<string, unknown>;
+
+/**
  * Options for creating a typed EventSource, including retry configuration.
  */
 export interface CreateOptions extends EventSourceInit {
