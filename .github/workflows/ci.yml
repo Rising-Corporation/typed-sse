@@ -39,16 +39,9 @@ jobs:
       - run: bun install
       - run: bun run version-patch
       - run: bun run build
-      - name: Configure npm token
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-      - run: bun publish
-
-      # - run: bun publish
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   # publish:
   #   runs-on: ubuntu-latest
