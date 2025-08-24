@@ -7,6 +7,7 @@
 ![GitHub](https://img.shields.io/github/stars/Rising-Corporation/typed-sse?style=social&logo=github)
 ![GitHub forks](https://img.shields.io/github/forks/Rising-Corporation/typed-sse?style=social&logo=github)
 ![GitHub issues](https://img.shields.io/github/issues/Rising-Corporation/typed-sse?logo=github)
+![CI](https://github.com/Rising-Corporation/typed-sse/actions/workflows/ci.yml/badge.svg)
 
 ![status](https://img.shields.io/badge/status-beta-orange)
 ![license](https://img.shields.io/github/license/Rising-Corporation/typed-sse?logo=open-source-initiative&logoColor=white)
@@ -37,13 +38,9 @@ interface Events {
 
 const es = new EventSource("/api/events/stream");
 
-const connected = addTypedDataEventListener<Events>(
-  es,
-  "connected",
-  (data) => {
-    console.log("id:", data.connection_id);
-  }
-);
+const connected = addTypedDataEventListener<Events>(es, "connected", (data) => {
+  console.log("id:", data.connection_id);
+});
 
 connected.stopListening();
 es.close();

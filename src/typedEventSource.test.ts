@@ -23,7 +23,9 @@ describe("typedEventSource retry option", () => {
     const sse = typedEventSource(
       "http://example.com",
       { retry: null },
-      FakeEventSource as unknown as { new (url: string, init?: EventSourceInit): EventSource }
+      FakeEventSource as unknown as {
+        new (url: string, init?: EventSourceInit): EventSource;
+      }
     );
 
     // Trigger an error on the first instance

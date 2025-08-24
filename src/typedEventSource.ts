@@ -8,12 +8,10 @@ import {
 
 function getDefaultCtor(): EventSourceCtor | undefined {
   // DOM: présent en navigateur; Node: souvent undefined
-  return (globalThis as any).EventSource as EventSourceCtor | undefined;
+  return globalThis.EventSource as EventSourceCtor | undefined;
 }
 
-export function typedEventSource<
-  Events extends TypedEventMap = TypedEventMap
->(
+export function typedEventSource<Events extends TypedEventMap = TypedEventMap>(
   url: string,
   opts: CreateOptions = {},
   ES: EventSourceCtor | undefined = getDefaultCtor()

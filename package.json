@@ -1,6 +1,6 @@
 {
   "name": "typed-sse",
-  "version": "0.1.5",
+  "version": "0.1.4",
   "description": "Typed helpers for Server-Sent Events (EventSource) with JSON parsing and optional reconnect.",
   "type": "module",
   "exports": {
@@ -44,10 +44,14 @@
     "node": ">=20"
   },
   "devDependencies": {
-    "typescript": "^5.9.2",
+    "@eslint/js": "^9.34.0",
     "@typescript-eslint/eslint-plugin": "^8.40.0",
     "@typescript-eslint/parser": "^8.40.0",
-    "eslint": "^8.57.1",
+    "eslint": "^9.34.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0",
     "vitest": "^2.1.9"
   },
   "peerDependencies": {}
