@@ -34,7 +34,9 @@ export function typedEventSource(
   let es: EventSource | null = null;
   let closed = false;
   let attempt = 0;
-  const retryCfg = opts.retry ?? { base: 500, max: 30_000 };
+  // Use defaults only when retry is undefined; allow null to disable retries
+  const retryCfg =
+    opts.retry === undefined ? { base: 500, max: 30_000 } : opts.retry;
   const listeners = new Map<string, Set<(e: MessageEvent) => void>>();
 
   const addRaw = (type: string, fn: (e: MessageEvent) => void) => {
