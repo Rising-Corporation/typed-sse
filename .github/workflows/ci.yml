@@ -39,7 +39,7 @@ jobs:
       - run: bun install
       - run: bun run version-patch
       - run: bun run build
-      - run: bun publish
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
       # - name: Configure npm token
