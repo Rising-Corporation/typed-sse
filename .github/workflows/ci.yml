@@ -39,29 +39,7 @@ jobs:
       - run: bun install
       - run: bun run version-patch
       - run: bun run build
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      # - name: Configure npm token
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      #   run: |
-      #     echo "//registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}" > ~/.npmrc
-      # - run: bun publish
-
-  # publish:
-  #   runs-on: ubuntu-latest
-  #   needs: build # N'exécute ce job que si le job 'build' réussit
-  #   #if: github.event_name == 'release' # Seulement sur une release
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - uses: actions/setup-node@v4
-  #       with:
-  #         node-version: "20"
-  #         registry-url: "https://registry.npmjs.org" # Pour npm
-  #     - run: npm version patch
-  #     - run: npm install
-  #     - run: npm run build
-  #     - run: npm publish
-  #       env:
-  #         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # Utilise le secret
+      - name: Set up .npmrc
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+      - name: Publish package
+        run: npm publish
