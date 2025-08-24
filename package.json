@@ -19,7 +19,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "lint": "eslint . --ext .ts",
+    "test": "vitest run"
   },
   "keywords": [
     "sse",
@@ -30,11 +32,23 @@
   ],
   "author": "MrRise",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rising-Corporation/typed-sse.git"
+  },
+  "homepage": "https://github.com/Rising-Corporation/typed-sse#readme",
+  "bugs": {
+    "url": "https://github.com/Rising-Corporation/typed-sse/issues"
+  },
   "engines": {
     "node": ">=18"
   },
   "devDependencies": {
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "@typescript-eslint/eslint-plugin": "^8.8.1",
+    "@typescript-eslint/parser": "^8.8.1",
+    "eslint": "^8.57.0",
+    "vitest": "^2.1.3"
   },
   "peerDependencies": {}
 }
