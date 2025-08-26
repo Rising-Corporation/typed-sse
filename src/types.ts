@@ -26,7 +26,7 @@ export interface CreateOptions extends EventSourceInit {
 /**
  * Constructor type compatible with EventSource and polyfills.
  */
-export interface EventSourceCtor {
+export interface EventSourceConstructor {
   new (url: string, init?: EventSourceInit): EventSource;
 }
 

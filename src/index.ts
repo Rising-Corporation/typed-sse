@@ -5,4 +5,4 @@
 
 export * from "./types";
 export * from "./addTypedDataEventListener";
-export { TypedEventSource } from "./typedEventSource";
+export { TypedEventSource } from "./TypedEventSource";

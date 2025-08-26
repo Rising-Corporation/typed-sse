@@ -1,34 +1,35 @@
 import {
   parseEvent,
-  type EventSourceCtor,
+  type EventSourceConstructor,
   type CreateOptions,
   type TypedHandler,
   type TypedEventMap,
 } from "./types";
 
-function getDefaultCtor(): EventSourceCtor | undefined {
-  // DOM: présent en navigateur; Node: souvent undefined
-  return globalThis.EventSource as EventSourceCtor | undefined;
+function getDefaultConstructor(): EventSourceConstructor | undefined {
+  // DOM: present in browsers; Node: often undefined
+  return globalThis.EventSource as EventSourceConstructor | undefined;
 }
 
-export class TypedEventSource<
-  Events extends TypedEventMap = TypedEventMap,
-> {
+class TypedEventSource<Events extends TypedEventMap = TypedEventMap> {
   private es: EventSource | null = null;
   private closed = false;
   private attempt = 0;
   private readonly retryCfg: { base?: number; max?: number } | null;
-  private readonly listeners = new Map<string, Set<(e: MessageEvent) => void>>();
+  private readonly listeners = new Map<
+    string,
+    Set<(e: MessageEvent) => void>
+  >();
 
   constructor(
     private url: string,
     private opts: CreateOptions = {},
-    ES: EventSourceCtor | undefined = getDefaultCtor(),
+    ES: EventSourceConstructor | undefined = getDefaultConstructor()
   ) {
     if (!ES) {
       throw new Error(
         "EventSource is not available in this environment. " +
-          "Provide a constructor (e.g., from the 'eventsource' polyfill) as the 3rd argument.",
+          "Provide a constructor (e.g., from the 'eventsource' polyfill) as the 3rd argument."
       );
     }
 
@@ -39,7 +40,7 @@ export class TypedEventSource<
     this.connect();
   }
 
-  private ES: EventSourceCtor;
+  private ES: EventSourceConstructor;
 
   private addRaw(type: string, fn: (e: MessageEvent) => void) {
     if (!this.listeners.has(type)) this.listeners.set(type, new Set());
@@ -54,7 +55,8 @@ export class TypedEventSource<
 
   private attachAll() {
     for (const [type, set] of this.listeners.entries()) {
-      for (const fn of set) this.es?.addEventListener(type, fn as EventListener);
+      for (const fn of set)
+        this.es?.addEventListener(type, fn as EventListener);
     }
   }
 
@@ -75,7 +77,7 @@ export class TypedEventSource<
       this.attempt++;
       const backoff = Math.min(
         (this.retryCfg.base ?? 500) * Math.pow(2, this.attempt - 1),
-        this.retryCfg.max ?? 30_000,
+        this.retryCfg.max ?? 30_000
       );
       setTimeout(() => this.connect(), backoff);
     };
@@ -85,7 +87,7 @@ export class TypedEventSource<
 
   on<K extends keyof Events>(
     type: K,
-    handler: TypedHandler<Events[K]>,
+    handler: TypedHandler<Events[K]>
   ): { stopListening: () => void } {
     const wrapped = (ev: MessageEvent) => {
       const data = parseEvent<Events[K]>(ev);
@@ -108,3 +110,4 @@ export class TypedEventSource<
   }
 }
 
+export { TypedEventSource };

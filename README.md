@@ -14,6 +14,11 @@
 
 <!-- [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-blue.svg?logo=conventionalcommits)](https://www.conventionalcommits.org/en/v1.0.0/) -->
 
+> ⚠️ **Warning:**  
+> The naming convention for this library is not yet finalized and may change between versions. **Do not use it in production environments until the first LTS release!**
+>
+> 🚧 The beta version is under active development.
+
 `typed-sse` is a TypeScript wrapper for the native `EventSource` API, designed to simplify working with server-sent events (SSE). It allows you to read event data directly with automatic type checking, ensuring that the payloads match your expected types. This helps catch errors at compile time and makes your SSE code safer and easier to maintain.
 
 ## Two Ways to Use

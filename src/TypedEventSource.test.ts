@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { TypedEventSource } from "./typedEventSource";
-import type { EventSourceCtor } from "./types";
+import { TypedEventSource } from "./TypedEventSource";
+import type { EventSourceConstructor } from "./types";
 
 // Minimal fake EventSource implementation for testing
 type EventHandler = ((ev: Event) => void) | null;
@@ -24,7 +24,7 @@ describe("TypedEventSource retry option", () => {
     const sse = new TypedEventSource(
       "http://example.com",
       { retry: null },
-      FakeEventSource as unknown as EventSourceCtor
+      FakeEventSource as unknown as EventSourceConstructor
     );
 
     // Trigger an error on the first instance
