@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { typedEventSource } from "./typedEventSource";
+import { TypedEventSource } from "./typedEventSource";
+import type { EventSourceCtor } from "./types";
 
 // Minimal fake EventSource implementation for testing
 type EventHandler = ((ev: Event) => void) | null;
@@ -16,16 +17,14 @@ class FakeEventSource {
   close() {}
 }
 
-describe("typedEventSource retry option", () => {
+describe("TypedEventSource retry option", () => {
   it("does not reconnect when retry is null", () => {
     vi.useFakeTimers();
 
-    const sse = typedEventSource(
+    const sse = new TypedEventSource(
       "http://example.com",
       { retry: null },
-      FakeEventSource as unknown as {
-        new (url: string, init?: EventSourceInit): EventSource;
-      }
+      FakeEventSource as unknown as EventSourceCtor
     );
 
     // Trigger an error on the first instance

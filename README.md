@@ -21,7 +21,7 @@
 You can use `typed-sse` in two ways:
 
 1. With the classic `EventSource` API for minimal changes to your existing code.
-2. With the custom `typedEventSource` for a more streamlined and type-safe experience.
+2. With the custom `TypedEventSource` class for a more streamlined and type-safe experience.
 
 ### Method 1: Classic EventSource
 
@@ -46,12 +46,12 @@ connected.stopListening();
 es.close();
 ```
 
-### Method 2: typedEventSource
+### Method 2: TypedEventSource
 
-- Use the `typedEventSource` function for a more streamlined and type-safe experience. This approach provides a convenient API for subscribing to events with automatic type checking.
+- Use the `TypedEventSource` class for a more streamlined and type-safe experience. Instantiate it to subscribe to events with automatic type checking.
 
 ```ts
-import { typedEventSource } from "typed-sse";
+import { TypedEventSource } from "typed-sse";
 
 interface ConnectionData {
   custom_data_id: string;
@@ -67,7 +67,7 @@ interface Events {
   message: MessageEventPayload;
 }
 
-const tes = typedEventSource<Events>("/api/events/stream", {
+const tes = new TypedEventSource<Events>("/api/events/stream", {
   withCredentials: true,
   retry: { base: 500, max: 30000 },
 });
