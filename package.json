@@ -1,6 +1,6 @@
 {
   "name": "typed-sse",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Typed helpers for Server-Sent Events (EventSource) with JSON parsing and optional reconnect.",
   "type": "module",
   "exports": {
