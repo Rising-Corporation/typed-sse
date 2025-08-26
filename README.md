@@ -19,80 +19,121 @@
 >
 > 🚧 The beta version is under active development.
 
-`typed-sse` is a TypeScript wrapper for the native `EventSource` API, designed to simplify working with server-sent events (SSE). It allows you to read event data directly with automatic type checking, ensuring that the payloads match your expected types. This helps catch errors at compile time and makes your SSE code safer and easier to maintain.
+`typed-sse` is a TypeScript library that provides a robust, type-safe wrapper for the native `EventSource` API. It enables you to handle server-sent events (SSE) with strict type checking, ensuring that event payloads match your expected types. This helps catch errors at compile time and makes your SSE code safer, more maintainable, and easier to refactor.
+
+## Features
+
+- **Type-safe event handling**: Define your event map interface and get compile-time safety for all event payloads.
+- **Flexible event mapping**: Supports custom event types and payloads, including nested objects and arrays.
+- **Automatic JSON parsing**: Event data is parsed and validated before reaching your handler.
+- **Retry logic**: TypedEventSource supports configurable automatic reconnection with exponential backoff.
+- **Works in browser and Node.js**: Use the native EventSource or provide a polyfill for Node environments.
 
 ## Two Ways to Use
 
 You can use `typed-sse` in two ways:
 
-1. With the classic `EventSource` API for minimal changes to your existing code.
-2. With the custom `TypedEventSource` class for a more streamlined and type-safe experience.
+1. **With the classic EventSource API** for minimal changes to your existing code, using `addTypedDataEventListener` for type-safe listeners.
+2. **With the custom TypedEventSource class** for a streamlined, type-safe experience and advanced features.
 
-### Method 1: Classic EventSource
+### Method 1: Classic EventSource (with type-safe listeners)
 
-Use the standard `EventSource` and enhance it with type-safe event listeners using `addTypedDataEventListener`.
+Use the standard `EventSource` and add type-safe event listeners with `addTypedDataEventListener`. This lets you keep your existing code style while gaining type safety for event payloads.
 
-- This implementation offers a type-safe approach to handling EventSource events. If you prefer to keep using the standard EventSource class for clearer code readability, you can use the `addTypedDataEventListener` function. It takes a regular EventSource instance and allows you to access event payloads in a type-safe way.
-
-```ts
+```typescript
 import { addTypedDataEventListener } from "typed-sse";
 
-interface Events {
-  connected: { connection_id: string };
+interface ConnectedData {
+  id: number;
+  text: string;
 }
 
-const es = new EventSource("/api/events/stream");
+interface MyEvents {
+  message: { text: string };
+  custom: {
+    foo: { title: string; description: string; id: number };
+    bar: { list: number[]; id: number; name: string };
+    text: string;
+  };
+}
 
-const connected = addTypedDataEventListener<Events>(es, "connected", (data) => {
-  console.log("id:", data.connection_id);
-});
+const es = new EventSource("/api/stream");
 
-connected.stopListening();
+// using a simple data structure as type
+const connectedListener = addTypedDataEventListener<ConnectedData>(
+  es,
+  "connected",
+  (data) => {
+    console.log("Connection id:", data.id);
+    console.log("Connection id:", data.text);
+  }
+);
+
+// or a list of data you are looking for ...
+const customListener = addTypedDataEventListener<MyEvents["custom"]>(
+  es,
+  "custom",
+  (data) => {
+    console.log("Custom bar list:", data.bar.list);
+  }
+);
+
+// To stop listening:
+connectedListener.stopListening();
+customListener.stopListening();
 es.close();
 ```
 
-### Method 2: TypedEventSource
+### Method 2: TypedEventSource (recommended)
 
-- Use the `TypedEventSource` class for a more streamlined and type-safe experience. Instantiate it to subscribe to events with automatic type checking.
+Use the `TypedEventSource` class for a fully type-safe, ergonomic SSE experience. It supports automatic JSON parsing, retry logic, and easy listener management.
 
-```ts
+```typescript
 import { TypedEventSource } from "typed-sse";
 
-interface ConnectionData {
-  custom_data_id: string;
-  custom_data_number: number;
-  custom_data_status: boolean;
-}
-interface MessageEventPayload {
-  /* ... */
+interface CustomData {
+  text: string;
+  foo: { title: string; description: string; id: number };
+  bar: { list: number[]; id: number; name: string };
 }
 
-interface Events {
-  custom: ConnectionData;
-  message: MessageEventPayload;
+interface MyEvents {
+  connected: { id: string };
+  message: { text: string };
+  custom: CustomData;
 }
 
-const tes = new TypedEventSource<Events>("/api/events/stream", {
+const sse = new TypedEventSource<MyEvents>("/api/stream", {
   withCredentials: true,
-  retry: { base: 500, max: 30000 },
+  retry: { base: 1000, max: 30000 },
 });
 
-const customEvent = tes.on("custom", (data) => {
-  console.log("Received 'custom' event with parsed and typed data:", data);
-  console.log(
-    `You can directly access typed payload properties: data.connection_id: ${data.custom_data_id} , custom_data_number : ${data.custom_data_number}, etc ... `
-  );
+const connectedListener = sse.on("connected", (data) => {
+  console.log("Connection id:", data.id);
 });
 
-const messageEvent = tes.on("message", (data) => {
-  // ...
+const customListener = sse.on("custom", (data) => {
+  console.log("Custom bar list:", data.bar.list);
 });
 
-// cleanup
-customEvent.stopListening();
-messageEvent.stopListening();
-tes.close();
+// To stop listening:
+connectedListener.stopListening();
+customListener.stopListening();
+sse.close();
 ```
+
+## API Reference
+
+### TypedEventSource
+
+- `constructor(url: string, opts?: CreateOptions, ES?: EventSourceConstructor)`
+- `.on(eventName, handler)` — Add a type-safe listener for an event.
+- `.close()` — Close the connection and stop all listeners.
+- `.current` — Get the current EventSource instance (or null).
+
+### addTypedDataEventListener
+
+- `addTypedDataEventListener<T>(eventSource, eventName, handler, errorHandler?)` — Add a type-safe listener to an existing EventSource.
 
 ## 👨‍💻 Author
 
