@@ -42,13 +42,13 @@ class TypedEventSource<Events extends TypedEventMap = TypedEventMap> {
 
   private ES: EventSourceConstructor;
 
-  private addRaw(type: string, fn: (e: MessageEvent) => void) {
+  private addListener(type: string, fn: (e: MessageEvent) => void) {
     if (!this.listeners.has(type)) this.listeners.set(type, new Set());
     this.listeners.get(type)!.add(fn);
     this.es?.addEventListener(type, fn as EventListener);
   }
 
-  private removeRaw(type: string, fn: (e: MessageEvent) => void) {
+  private removeListener(type: string, fn: (e: MessageEvent) => void) {
     this.listeners.get(type)?.delete(fn);
     this.es?.removeEventListener(type, fn as EventListener);
   }
@@ -93,9 +93,9 @@ class TypedEventSource<Events extends TypedEventMap = TypedEventMap> {
       const data = parseEvent<Events[K]>(ev);
       if (data != null) handler(data);
     };
-    this.addRaw(type as string, wrapped);
+    this.addListener(type as string, wrapped);
     return {
-      stopListening: () => this.removeRaw(type as string, wrapped),
+      stopListening: () => this.removeListener(type as string, wrapped),
     };
   }
 
