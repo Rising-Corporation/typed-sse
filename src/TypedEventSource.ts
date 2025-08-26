@@ -77,7 +77,38 @@ class TypedEventSource<Events> {
    *
    * @example
    * ```typescript
-   * const sse = new TypedEventSource<MyEvents>("/api/stream", { retry: { base: 1000, max: 5 } });
+   * interface CustomData {
+   *   text: string;
+   *   foo: { title: string, description: string, id: number };
+   *   bar: { list: [], id: number, name: string };
+   * }
+   *
+   * interface MyEvents {
+   *   connected: { id: string };
+   *   message: { text: string };
+   *   custom: CustomData;
+   * }
+   *
+   * const sse = new TypedEventSource<MyEvents>("/api/stream");
+   *
+   * sse.on("connected", (data) => {
+   *   console.log("Connection id:", data.id);
+   * });
+   *
+   * sse.on("message", (data) => {
+   *   console.log("Message text:", data.text);
+   * });
+   *
+   * sse.on("custom", (data) => {
+   *   console.log("Custom data.bar array:", data.bar.list);
+   * });
+   *
+   * // To stop listening:
+   * const connectedListener = sse.on("connected", handler);
+   * connectedListener.stopListening();
+   *
+   * // To close the connection:
+   * sse.close();
    * ```
    */
   constructor(
