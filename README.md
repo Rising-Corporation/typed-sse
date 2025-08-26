@@ -48,40 +48,20 @@ interface ConnectedData {
   text: string;
 }
 
-interface MyEvents {
-  message: { text: string };
-  custom: {
-    foo: { title: string; description: string; id: number };
-    bar: { list: number[]; id: number; name: string };
-    text: string;
-  };
-}
-
-const es = new EventSource("/api/stream");
+const eventSource = new EventSource("/api/stream");
 
 // using a simple data structure as type
 const connectedListener = addTypedDataEventListener<ConnectedData>(
-  es,
+  eventSource,
   "connected",
   (data) => {
-    console.log("Connection id:", data.id);
-    console.log("Connection id:", data.text);
-  }
-);
-
-// or a list of data you are looking for ...
-const customListener = addTypedDataEventListener<MyEvents["custom"]>(
-  es,
-  "custom",
-  (data) => {
-    console.log("Custom bar list:", data.bar.list);
+    console.log("Connection text:", data.text);
   }
 );
 
 // To stop listening:
 connectedListener.stopListening();
-customListener.stopListening();
-es.close();
+eventSource.close();
 ```
 
 ### Method 2: TypedEventSource (recommended)
@@ -103,23 +83,34 @@ interface MyEvents {
   custom: CustomData;
 }
 
-const sse = new TypedEventSource<MyEvents>("/api/stream", {
-  withCredentials: true,
-  retry: { base: 1000, max: 30000 },
-});
+//simple :
+const typedEventSource = new TypedEventSource<MyEvents>("/path/to/stream"});
 
-const connectedListener = sse.on("connected", (data) => {
+
+const connectedListener = typedEventSource.on("connected", (data) => {
   console.log("Connection id:", data.id);
 });
 
-const customListener = sse.on("custom", (data) => {
+const customListener = typedEventSource.on("custom", (data) => {
   console.log("Custom bar list:", data.bar.list);
 });
 
 // To stop listening:
 connectedListener.stopListening();
 customListener.stopListening();
-sse.close();
+typedEventSource.close();
+
+
+
+//or with options... :
+/*
+
+const sse = new TypedEventSource<MyEvents>("/path/to/stream", {
+  withCredentials: true,
+  retry: { base: 1000, max: 30000 },
+});
+
+*/
 ```
 
 ## API Reference
