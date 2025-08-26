@@ -58,6 +58,41 @@ function getDefaultConstructor(): EventSourceConstructor | undefined {
  * ```
  */
 class TypedEventSource<Events> {
+  /**
+   * Native EventSource properties delegated for compatibility
+   */
+  get onerror(): ((ev: Event) => void) | null {
+    return this.es?.onerror ?? null;
+  }
+  set onerror(fn: ((ev: Event) => void) | null) {
+    if (this.es) this.es.onerror = fn;
+  }
+
+  get onmessage(): ((ev: MessageEvent) => void) | null {
+    return this.es?.onmessage ?? null;
+  }
+  set onmessage(fn: ((ev: MessageEvent) => void) | null) {
+    if (this.es) this.es.onmessage = fn;
+  }
+
+  get onopen(): ((ev: Event) => void) | null {
+    return this.es?.onopen ?? null;
+  }
+  set onopen(fn: ((ev: Event) => void) | null) {
+    if (this.es) this.es.onopen = fn;
+  }
+
+  get readyState(): number {
+    return this.es?.readyState ?? 2; // CLOSED if not connected
+  }
+
+  get url(): string {
+    return this.es?.url ?? this.url;
+  }
+
+  get withCredentials(): boolean {
+    return this.es?.withCredentials ?? !!this.opts.withCredentials;
+  }
   private es: EventSource | null = null;
   private closed = false;
   private attempt = 0;
@@ -112,7 +147,7 @@ class TypedEventSource<Events> {
    * ```
    */
   constructor(
-    private url: string,
+    private _url: string,
     private opts: CreateOptions = {},
     ES: EventSourceConstructor | undefined = getDefaultConstructor()
   ) {
@@ -166,7 +201,7 @@ class TypedEventSource<Events> {
    */
   private connect() {
     if (this.closed) return;
-    this.es = new this.ES(this.url, this.opts);
+    this.es = new this.ES(this._url, this.opts);
 
     this.attempt = 0;
 
